@@ -452,7 +452,6 @@ function rotateMatrix(matrix) {
       right -= 1;
     }
   }
-
   return m;
 }
 
@@ -470,8 +469,90 @@ function rotateMatrix(matrix) {
  *  [2, 9, 5, 9]    => [2, 5, 9, 9]
  *  [-2, 9, 5, -3]  => [-3, -2, 5, 9]
  */
-function sortByAsc(/* arr */) {
-  throw new Error('Not implemented');
+function sortByAsc(arr) {
+  const a = arr;
+
+  function insertionSort(low, high) {
+    let start = low + 1;
+    while (start <= high) {
+      const key = a[start];
+      let j = start - 1;
+
+      while (j >= low && a[j] > key) {
+        a[j + 1] = a[j];
+        j -= 1;
+      }
+
+      a[j + 1] = key;
+      start += 1;
+    }
+  }
+
+  function quickSort(low, high) {
+    let l = low;
+    let h = high;
+
+    while (l < h) {
+      if (h - l < 16) {
+        insertionSort(l, h);
+        return;
+      }
+
+      const mid = l + Math.floor((h - l) / 2);
+
+      if (a[mid] < a[l]) {
+        const t1 = a[l];
+        a[l] = a[mid];
+        a[mid] = t1;
+      }
+
+      if (a[h] < a[l]) {
+        const t2 = a[l];
+        a[l] = a[h];
+        a[h] = t2;
+      }
+
+      if (a[h] < a[mid]) {
+        const t3 = a[mid];
+        a[mid] = a[h];
+        a[h] = t3;
+      }
+
+      const pivot = a[mid];
+      let i = l;
+      let j = h;
+
+      while (i <= j) {
+        while (a[i] < pivot) i += 1;
+        while (a[j] > pivot) j -= 1;
+
+        if (i <= j) {
+          const t = a[i];
+          a[i] = a[j];
+          a[j] = t;
+          i += 1;
+          j -= 1;
+        }
+      }
+
+      const leftSize = j - l;
+      const rightSize = h - i;
+
+      if (leftSize < rightSize) {
+        quickSort(l, j);
+        l = i;
+      } else {
+        quickSort(i, h);
+        h = j;
+      }
+    }
+  }
+
+  if (a.length > 1) {
+    quickSort(0, a.length - 1);
+  }
+
+  return a;
 }
 
 /**
@@ -491,8 +572,24 @@ function sortByAsc(/* arr */) {
  *  '012345', 3 => '024135' => '043215' => '031425'
  *  'qwerty', 3 => 'qetwry' => 'qtrewy' => 'qrwtey'
  */
-function shuffleChar(/* str, iterations */) {
-  throw new Error('Not implemented');
+function shuffleChar(str, iterations) {
+  if (str.length <= 1 || iterations === 0) return str;
+  let current = str;
+  const states = [str];
+  for (let i = 1; i <= iterations; i += 1) {
+    let even = '';
+    let odd = '';
+    for (let j = 0; j < current.length; j += 1) {
+      if (j % 2 === 0) even += current[j];
+      else odd += current[j];
+    }
+    current = even + odd;
+    states[i] = current;
+    if (current === str) {
+      return states[iterations % i];
+    }
+  }
+  return current;
 }
 
 /**
